@@ -24,3 +24,11 @@ def get_match_score(match_id: int):
     """
     return scraper.get_match_score(match_id)
 
+@app.get("/matchs/results")
+def get_match_results(size: int = None):
+    """
+    Route pour récupérer la liste des matchs passés
+    """
+    return scraper.get_match_results(size=size)
+
+
