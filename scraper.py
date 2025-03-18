@@ -98,52 +98,52 @@ def get_match_results(size=None):
         if prev_sibling:
             current_date = prev_sibling.text.strip()
 
-        # Récupérer l'ID du match
-        match_link = match_card.find("a", class_="match-item")
-        if not match_link:
-            continue  # Passer si aucun lien trouvé
+        # Récupérer toutes les balises <a class="match-item"> (plusieurs matchs possibles)
+        match_links = match_card.find_all("a", class_="match-item")
+        
+        for match_link in match_links:
+            match_id = match_link["href"].split("/")[1]  # Extraire l'ID du match
 
-        match_id = match_link["href"].split("/")[1]  # Extraire l'ID du match
+            # Récupérer les équipes
+            teams = match_link.find_all("div", class_="match-item-vs-team-name")
+            if len(teams) < 2:
+                continue
 
-        # Récupérer les équipes
-        teams = match_card.find_all("div", class_="match-item-vs-team-name")
-        if len(teams) < 2:
-            continue
+            team_1 = teams[0].text.strip()
+            team_2 = teams[1].text.strip()
 
-        team_1 = teams[0].text.strip()
-        team_2 = teams[1].text.strip()
+            # Récupérer le score
+            score_divs = match_link.find_all("div", class_="match-item-vs-team-score")
+            if score_divs and len(score_divs) >= 2:
+                team_1_score = score_divs[0].text.strip()
+                team_2_score = score_divs[1].text.strip()
+            else:
+                team_1_score = team_2_score = "N/A"
 
-        # Récupérer le score
-        score_divs = match_card.find_all("div", class_="match-item-vs-team-score")
-        if score_divs and len(score_divs) >= 2:
-            team_1_score = score_divs[0].text.strip()
-            team_2_score = score_divs[1].text.strip()
-        else:
-            team_1_score = team_2_score = "N/A"
-
-        # Ajouter au dictionnaire de résultats
-        matches[match_id] = {
-            "match_id": match_id,
-            "match_date": current_date,  # Ajout de la date correcte
-            "teams": {
-                "team_1": {
-                    "name": team_1,
-                    "score": team_1_score
+            # Ajouter au dictionnaire de résultats
+            matches[match_id] = {
+                "match_id": match_id,
+                "match_date": current_date,  # Ajout de la date correcte
+                "teams": {
+                    "team_1": {
+                        "name": team_1,
+                        "score": team_1_score
+                    },
+                    "team_2": {
+                        "name": team_2,
+                        "score": team_2_score
+                    }
                 },
-                "team_2": {
-                    "name": team_2,
-                    "score": team_2_score
+                "formatted_scores": {
+                    "score_named_with_dash": f"{team_1} {team_1_score} - {team_2_score} {team_2}",
+                    "score_with_dash": f"{team_1_score} - {team_2_score}",
+                    "score_named_with_colon": f"{team_1} {team_1_score} : {team_2_score} {team_2}",
+                    "score_with_colon": f"{team_1_score} : {team_2_score}"
                 }
-            },
-            "formatted_scores": {
-                "score_named_with_dash": f"{team_1} {team_1_score} - {team_2_score} {team_2}",
-                "score_with_dash": f"{team_1_score} - {team_2_score}",
-                "score_named_with_colon": f"{team_1} {team_1_score} : {team_2_score} {team_2}",
-                "score_with_colon": f"{team_1_score} : {team_2_score}"
             }
-        }
 
     return matches
+
 
 # Exécuter le script et afficher en JSON
 if __name__ == "__main__":
