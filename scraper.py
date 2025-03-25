@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import json  # Importer json pour la sortie formatée
+from datetime import datetime
 
 URL = "https://www.vlr.gg"
 MATCH_LIST_URL = URL + "/matches"
@@ -92,17 +93,28 @@ def get_match_results(size=None):
 
     current_date = "Date inconnue"
 
-    for match_card in match_cards:
+    for match_card in match_cards:  
         # Vérifier si un bloc date précède le match et l'assigner
         prev_sibling = match_card.find_previous_sibling("div", class_="wf-label mod-large")
         if prev_sibling:
+            if (prev_sibling.find("span")):
+                prev_sibling.span.decompose()
             current_date = prev_sibling.text.strip()
+
+            dt = datetime.strptime(current_date, "%a, %B %d, %Y")
+
 
         # Récupérer toutes les balises <a class="match-item"> (plusieurs matchs possibles)
         match_links = match_card.find_all("a", class_="match-item")
         
         for match_link in match_links:
+
+            match_time = match_link.find("div", class_="match-item-time").text.strip()
+            match_time_dt = datetime.strptime(match_time, "%I:%M %p")
+            match_dt = dt.replace(hour=match_time_dt.hour, minute=match_time_dt.minute)
+
             match_id = match_link["href"].split("/")[1]  # Extraire l'ID du match
+            match_id = int(match_id) 
 
             # Récupérer les équipes
             teams = match_link.find_all("div", class_="match-item-vs-team-name")
@@ -120,10 +132,12 @@ def get_match_results(size=None):
             else:
                 team_1_score = team_2_score = "N/A"
 
+            
+
             # Ajouter au dictionnaire de résultats
             matches[match_id] = {
                 "match_id": match_id,
-                "match_date": current_date,  # Ajout de la date correcte
+                "match_date": match_dt,  # Ajout de la date correcte
                 "teams": {
                     "team_1": {
                         "name": team_1,
@@ -141,6 +155,7 @@ def get_match_results(size=None):
                     "score_with_colon": f"{team_1_score} : {team_2_score}"
                 }
             }
+    matches = dict(sorted(matches.items(), key=lambda item: item[0], reverse=True))
 
     return matches
 
