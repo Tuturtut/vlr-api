@@ -29,6 +29,10 @@ def get_match_results(size: int = None):
     """
     Route pour récupérer la liste des matchs passés
     """
-    return scraper.get_match_results(size=size)
+    return scraper.get_match_list(size=size)
+
+@app.get("/matchs/schedule")
+def get_match_schedule(size: int = None):
+    return scraper.get_match_list(size=size, type="schedule")
 
 
