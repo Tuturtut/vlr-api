@@ -11,14 +11,21 @@ def get_match_list(size=None, type="results"):
     url = f"{MATCH_LIST_URL}/{type}"
     soup = fetch_soup(url)
 
-    match_cards = extract_match_cards(soup, size)
+    match_cards = soup.find_all("div", class_="wf-card")
     matches = []
 
     for card in match_cards:
-        matches.extend(parse_match_card(card))
+        parsed = parse_match_card(card)
+        for match in parsed:
+            matches.append(match)
+            if size and len(matches) >= size:
+                break
+        if size and len(matches) >= size:
+            break
 
     matches = sorted(matches, key=lambda m: m["match_id"], reverse=True)
     return {match["match_id"]: match for match in matches}
+
 
 
 def extract_match_cards(soup, size=None):
