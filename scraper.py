@@ -42,7 +42,7 @@ def get_match_score(match_id):
     # Récupération des scores par manche
     maps = soup.find_all("div", class_="vm-stats-game")  # Récupérer tous les blocs de maps
     games = {}
-    map_name = team1_score = team2_score = "TBD"
+    map_name = "TBD"
     map_duration = 0
     i = 1
     for index, game in enumerate(maps):
@@ -53,6 +53,8 @@ def get_match_score(match_id):
                 map.div.span.span.decompose()
                 map_name = map.div.span.text.strip()
                 map_duration = map.find("div", class_="map-duration").text.strip()
+                if (map_duration == "-"):
+                    map_duration = 0
              
         if len(scores) >= 2:
             team1_game_score = scores[0].text.strip()
@@ -96,7 +98,6 @@ def get_match_list(size=None, type="results"):
     matches = {}
 
     # Récupérer tous les blocs de date des matchs
-    date_blocks = soup.find_all("div", class_="wf-label mod-large")  # Contient la date complète
     match_cards = soup.find_all("div", class_="wf-card")  # Contient les matchs
     match_cards = match_cards[:size] if size else match_cards
 
@@ -142,13 +143,11 @@ def get_match_list(size=None, type="results"):
                 team_1_score = team_2_score = "TBD"
             if (team_1_score == "–" and team_2_score == "–"):
                 team_1_score = team_2_score = "TBD"
+             
 
-            
-
-            # Ajouter au dictionnaire de résultats
             matches[match_id] = {
                 "match_id": match_id,
-                "match_date": match_dt,  # Ajout de la date correcte
+                "match_date": match_dt, 
                 "teams": {
                     "team_1": {
                         "name": team_1,
@@ -171,6 +170,5 @@ def get_match_list(size=None, type="results"):
     return matches
 
 
-# Exécuter le script et afficher en JSON
 if __name__ == "__main__":
     print(get_match_list())
