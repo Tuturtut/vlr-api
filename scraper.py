@@ -18,6 +18,7 @@ def get_match_score(match_id):
     # Récupération des noms des équipes
     team1 = soup.find("div", class_="match-header-link-name mod-1")
     team2 = soup.find("div", class_="match-header-link-name mod-2")
+    team1_score = team2_score = 0
 
     score_div = soup.find("div", class_="match-header-vs-score")
 
@@ -49,8 +50,10 @@ def get_match_score(match_id):
         scores = game.find_all("div", class_="score")
         map = game.find("div", class_="map")
         if (map):
-            if (map.div and map.div.span and map.div.span.span):
-                map.div.span.span.decompose()
+            if (map.div and map.div.span):
+                pick_span = map.div.span.find("span", class_="picked")
+                if (pick_span):
+                    pick_span.decompose()
                 map_name = map.div.span.text.strip()
                 map_duration = map.find("div", class_="map-duration").text.strip()
                 if (map_duration == "-"):
@@ -84,7 +87,7 @@ def get_match_score(match_id):
     }
 
 
-    return match_data  # Retourne directement un dictionnaire
+    return match_data
 
 
 def get_match_list(size=None, type="results"):
