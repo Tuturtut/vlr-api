@@ -24,6 +24,7 @@ def fetch_soup(url):
     """
     import requests
     response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
+    print(f"➡️ Requete vers {url}")
     return BeautifulSoup(response.text, "html.parser")
 
 
