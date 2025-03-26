@@ -1,11 +1,11 @@
-import requests
 from bs4 import BeautifulSoup
 from scraper.utils import fetch_soup, safe_text, clean_nested_span
+from scraper.config import BASE_URL
 
-URL = "https://www.vlr.gg"
+
 
 def get_match_data(match_id):
-    soup = fetch_soup(f"{URL}/{match_id}")
+    soup = fetch_soup(f"{BASE_URL}/{match_id}")
     team1_name, team2_name = extract_team_names(soup)
     team1_score, team2_score = extract_global_score(soup)
     games = extract_games(soup)

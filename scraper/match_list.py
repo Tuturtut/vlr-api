@@ -1,11 +1,10 @@
 from datetime import datetime
 from bs4 import BeautifulSoup
 from datetime import datetime
-from scraper.utils import fetch_soup, clean_nested_span, safe_text
+from scraper.utils import fetch_soup, clean_nested_span, safe_text, format_scores
+from scraper.config import BASE_URL, MATCH_LIST_URL
 
 
-URL = "https://www.vlr.gg"
-MATCH_LIST_URL = URL + "/matches"
 
 def get_match_list(size=None, type="results"):
     url = f"{MATCH_LIST_URL}/{type}"
@@ -80,12 +79,7 @@ def parse_match_card(match_card):
                 "team_1": {"name": team1, "score": t1_score},
                 "team_2": {"name": team2, "score": t2_score},
             },
-            "formatted_scores": {
-                "score_named_with_dash": f"{team1} {t1_score} - {t2_score} {team2}",
-                "score_with_dash": f"{t1_score} - {t2_score}",
-                "score_named_with_colon": f"{team1} {t1_score} : {t2_score} {team2}",
-                "score_with_colon": f"{t1_score} : {t2_score}"
-            }
+            "formatted_scores": format_scores(team1, t1_score, t2_score, team2)
         })
 
     return matches

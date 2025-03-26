@@ -25,3 +25,15 @@ def fetch_soup(url):
     import requests
     response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
     return BeautifulSoup(response.text, "html.parser")
+
+
+def format_scores(team1, score1, score2, team2):
+    """
+    Retourne les noms et scores des équipes de manières formatés
+    """
+    return {
+        "score_named_with_dash": f"{team1} {score1} - {score2} {team2}",
+        "score_with_dash": f"{score1} - {score2}",
+        "score_named_with_colon": f"{team1} {score1} : {score2} {team2}",
+        "score_with_colon": f"{score1} : {score2}"
+    }
