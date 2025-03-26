@@ -43,6 +43,7 @@ from scraper.utils import clean_nested_span
 def extract_games(soup):
     maps = soup.find_all("div", class_="vm-stats-game")
     games = []
+    game_index = 1
     for i, game in enumerate(maps, start=1):
         map_name = "TBD"
         map_duration = "0"
@@ -61,12 +62,14 @@ def extract_games(soup):
             team1_score = scores[0].text.strip()
             team2_score = scores[1].text.strip()
             games.append({
-                "game": i,
+                "game": game_index,
                 "map_name": map_name,
                 "map_duration": map_duration,
                 "team_1_score": team1_score,
                 "team_2_score": team2_score
             })
+
+            game_index += 1
 
     return games
 
