@@ -28,7 +28,7 @@ async def update_matches_periodically():
         finally:
             db.close()
 
-        await asyncio.sleep(30)  # attends 30 secondes avant de recommencer
+        await asyncio.sleep(45)  # attends 30 secondes avant de recommencer
 
 
 

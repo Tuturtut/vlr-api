@@ -39,7 +39,13 @@ def get_match_data(match_id: int):
     db.close()
 
     if not match:
-        return {"error": "Match non trouvé en base. Tu dois l’ajouter d’abord."}
+
+        from background import store_match_details
+        match = store_match_details(match_id=match_id)
+
+        if not match:
+            db.close()
+            return{"error": "Unable to retrieve match details."}
 
     return {
         "match_id": match.match_id,
