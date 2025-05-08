@@ -26,5 +26,6 @@ class MatchDetails(Base):
     score_with_dash = Column(String)
     score_named_with_colon = Column(String)
     score_with_colon = Column(String)
-    games = Column(JSON)  # stockage direct du dictionnaire des games
+    games = Column(JSON)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    status = Column(String, default="planned")
