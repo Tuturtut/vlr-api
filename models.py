@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, JSON
+from sqlalchemy import Column, Integer, String, JSON, Datetime
 from database import Base
+from datetime import datetime
 
 class Match(Base):
     __tablename__ = "matches"
@@ -11,6 +12,7 @@ class Match(Base):
     team_2 = Column(String)
     team_2_score = Column(String)
     formatted = Column(String)  # exemple : "Team A 13 - 11 Team B"
+    updated_at = Column(Datetime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 class MatchDetails(Base):
     __tablename__ = "match_details"
@@ -25,3 +27,4 @@ class MatchDetails(Base):
     score_named_with_colon = Column(String)
     score_with_colon = Column(String)
     games = Column(JSON)  # stockage direct du dictionnaire des games
+    updated_at = Column(Datetime, default=datetime.utcnow, onupdate=datetime.utcnow)
