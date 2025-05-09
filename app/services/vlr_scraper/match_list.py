@@ -1,8 +1,8 @@
 from datetime import datetime
 from bs4 import BeautifulSoup
 from datetime import datetime
-from services.vlr_scraper.utils import fetch_soup, clean_nested_span, safe_text, format_scores
-from services.vlr_scraper.config import MATCH_LIST_URL
+from app.services.vlr_scraper.utils import fetch_soup, clean_nested_span, safe_text, format_scores
+from app.services.vlr_scraper.config import MATCH_LIST_URL
 
 
 
