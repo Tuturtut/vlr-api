@@ -1,2 +1,49 @@
-__pycache__
-matches.db
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyd
+
+# Environnements virtuels
+.env
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# SQLite DBs
+*.db
+
+
+# Logs
+*.log
+
+# VSCode
+.vscode/
+
+# Test/coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+nosetests.xml
+coverage.xml
+
+# Jupyter (au cas où)
+.ipynb_checkpoints/
+
+# Compilés, caches
+*.so
+*.egg-info/
+dist/
+build/
+
+# Node.js (si tu rajoutes un front un jour)
+node_modules/
+
+# Autres fichiers locaux
+.DS_Store
+Thumbs.db
