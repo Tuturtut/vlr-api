@@ -3,7 +3,7 @@ from app.services.vlr_scraper.match import get_match_data as scrape_match_data
 from database import SessionLocal
 from app.db.models import MatchDetails
 
-def get_match_data(match_id: int):
+def fetch_match_from_id(match_id: int):
     db = SessionLocal()
     match = db.query(MatchDetails).filter(MatchDetails.match_id == match_id).first()
 
