@@ -1,8 +1,10 @@
 from fastapi import FastAPI
+from app.db.init_db import init_db
 from app.routes import match_routes
 
-app = FastAPI()
+init_db()
 
+app = FastAPI()
 app.include_router(match_routes.router)
 
 @app.get("/")
