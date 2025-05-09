@@ -1,8 +1,7 @@
 from bs4 import BeautifulSoup
-from scraper.utils import fetch_soup, safe_text, clean_nested_span
-from scraper.config import BASE_URL
-
-
+from app.services.vlr_scraper.utils import fetch_soup, safe_text, clean_nested_span
+from app.services.vlr_scraper.config import BASE_URL
+from app.services.vlr_scraper.utils import clean_nested_span
 
 def get_match_data(match_id):
     soup = fetch_soup(f"{BASE_URL}/{match_id}")
@@ -37,8 +36,6 @@ def extract_global_score(soup):
 
     return team1_score, team2_score
 
-
-from scraper.utils import clean_nested_span
 
 def extract_games(soup):
     maps = soup.find_all("div", class_="vm-stats-game")
