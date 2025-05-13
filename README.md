@@ -10,3 +10,8 @@ Scraping logic is kept in `services/`, and endpoints are separated into routes a
 ```shell
 python -m uvicorn api:app --reload
 ```
+
+## Endpoint list
+
+- GET /matches : Return all the match in the DB
+- GET /matches/match/:id : Return match from DB if exist, else scrap from vlr.gg and add to the DB
