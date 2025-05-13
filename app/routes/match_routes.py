@@ -5,11 +5,7 @@ router = APIRouter(prefix="/matches", tags=["matches"])
 
 @router.get("/match/{match_id}")
 def get_match_from_id(match_id: int):
+    """
+    Fetch match details from the database or scrape if not found.
+    """
     return fetch_match_from_id(match_id) 
-
-@router.get("/results")
-def get_match_results(limit: int = None):
-    """
-    Retourne les derniers matchs enregistrés en base, triés par date décroissante.
-    """
-    return fetch_match_results(limit)

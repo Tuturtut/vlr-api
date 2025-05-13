@@ -48,27 +48,3 @@ def fetch_match_from_id(match_id: int):
     db.close()
     return result
 
-def fetch_match_results(limit: int = None):
-    """
-    Retourne les derniers matchs enregistrés en base, triés par date décroissante.
-    """
-    db = SessionLocal()
-    matches = db.query(Match).order_by(Match.match_date.desc()).limit(limit).all()
-    db.close()
-
-    return [
-        {
-            "match_id": m.match_id,
-            "match_date": m.match_date,
-            "team_1": {
-                "name": m.team_1,
-                "score": m.team_1_score
-            },
-            "team_2": {
-                "name": m.team_2,
-                "score": m.team_2_score
-            },
-            "formatted_score": m.formatted
-        }
-        for m in matches
-    ]
