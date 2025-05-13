@@ -3,19 +3,7 @@ from app.db.database import Base
 from datetime import datetime
 
 class Match(Base):
-    __tablename__ = "matches"
-
-    match_id = Column(Integer, primary_key=True, index=True)
-    match_date = Column(String)
-    team_1 = Column(String)
-    team_1_score = Column(String)
-    team_2 = Column(String)
-    team_2_score = Column(String)
-    formatted = Column(String)  # exemple : "Team A 13 - 11 Team B"
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-class MatchDetails(Base):
-    __tablename__ = "match_details"
+    __tablename__ = "match"
 
     match_id = Column(Integer, primary_key=True, index=True)
     team_1 = Column(String)
@@ -27,5 +15,5 @@ class MatchDetails(Base):
     score_named_with_colon = Column(String)
     score_with_colon = Column(String)
     games = Column(JSON)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.now(), onupdate=datetime.now())
     status = Column(String, default="planned")
