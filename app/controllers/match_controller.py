@@ -23,7 +23,7 @@ def fetch_match_from_id(match_id: int):
                 score_named_with_colon=details["score_named_with_colon"],
                 score_with_colon=details["score_with_colon"],
                 games=details["games"],
-                status=details.get("status", "planned"),  # optionnel
+                status=details["status"],
                 updated_at=datetime.now()
             )
             db.add(match)
@@ -48,13 +48,25 @@ def fetch_match_from_id(match_id: int):
             "score_with_colon": match.score_with_colon,
             "games": match.games,
             "status": match.status,
-            "updated_at": str(match.updated_at)
+            "updated_at": match.updated_at.isoformat()
         }
     }
 
     db.close()
     return result
 
+def delete_match_from_id(match_id: int):
+    db = SessionLocal()
+    match = db.query(Match).filter(Match.match_id == match_id).first()
+
+    if not match:
+        db.close()
+        return {"error": f"Match {match_id} non trouvé en base de données."}
+
+    db.delete(match)
+    db.commit()
+    db.close()
+    return {"message": f"Match {match_id} supprimé avec succès."}
 
 def get_matchs(size: int = 10, status: str = "results"):
     """

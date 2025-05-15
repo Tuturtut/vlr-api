@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.controllers.match_controller import fetch_match_from_id, get_matchs
+from app.controllers.match_controller import delete_match_from_id, fetch_match_from_id, get_matchs
 
 router = APIRouter(prefix="/matches", tags=["matches"])
 
@@ -16,3 +16,10 @@ def get_match_list(size: int = 10, status: str = "ended"):
     Returns a list of matches from the database
     """
     return get_matchs(size=size, status=status)
+
+@router.delete("/match/{match_id}")
+def delete_match(match_id: int):
+    """
+    Delete a match from the database
+    """
+    return delete_match_from_id(match_id)
