@@ -42,15 +42,23 @@ def extract_match_score(soup):
     score_div = soup.find("div", class_="match-header-vs-score")
 
     if score_div:
+        # Cas 1 : match terminé
         score_spans = score_div.find_all("span")
         score_spans = [s for s in score_spans if s.get("class") != ["match-header-vs-score-colon"]]
 
-        if len(score_spans) == 2:
-            try: 
-                team1_score = int(score_spans[0].text.strip())
-                team2_score = int(score_spans[1].text.strip())
-            except ValueError:
-                team1_score = team2_score = 0
+        if len(score_spans) == 2 and all(s.text.strip().isdigit() for s in score_spans):
+            team1_score = int(score_spans[0].text.strip())
+            team2_score = int(score_spans[1].text.strip())
+        else:
+            # Cas 2 : match en live (dans un <div class="js-spoiler">)
+            js_spoiler = score_div.find("div", class_="js-spoiler")
+            if js_spoiler:
+                spans = js_spoiler.find_all("span")
+                score_spans = [s for s in spans if not "match-header-vs-score-colon" in (s.get("class") or [])]
+                if len(score_spans) == 2 and all(s.text.strip().isdigit() for s in score_spans):
+                    team1_score = int(score_spans[0].text.strip())
+                    team2_score = int(score_spans[1].text.strip())
+
     return team1_score, team2_score
 
 
