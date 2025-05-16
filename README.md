@@ -8,7 +8,7 @@ Scraping logic is kept in `services/`, and endpoints are separated into routes a
 #### _Run this command in a shell at the root of the project_
 
 ```shell
-python -m uvicorn api:app --reload
+python -m uvicorn app.main:app --reload
 ```
 
 ## Endpoint list
