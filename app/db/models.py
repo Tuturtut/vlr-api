@@ -17,3 +17,5 @@ class Match(Base):
     games = Column(JSON)
     updated_at = Column(DateTime, default=datetime.now(), onupdate=datetime.now())
     status = Column(String, default="planned")
+    seconds_until_match = Column(Integer)
+    scheduled_time = Column(DateTime)

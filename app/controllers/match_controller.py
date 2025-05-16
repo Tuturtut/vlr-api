@@ -24,7 +24,9 @@ def fetch_match_from_id(match_id: int):
                 score_with_colon=details["score_with_colon"],
                 games=details["games"],
                 status=details["status"],
-                updated_at=datetime.now()
+                updated_at=datetime.now(),
+                seconds_until_match=details["seconds_until_match"],
+                scheduled_time=details["scheduled_time"]
             )
             db.add(match)
             db.commit()
@@ -48,7 +50,9 @@ def fetch_match_from_id(match_id: int):
             "score_with_colon": match.score_with_colon,
             "games": match.games,
             "status": match.status,
-            "updated_at": match.updated_at.isoformat()
+            "updated_at": match.updated_at.isoformat(),
+            "seconds_until_match": match.seconds_until_match,
+            "scheduled_time": match.scheduled_time
         }
     }
 

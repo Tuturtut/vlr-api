@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from bs4 import BeautifulSoup
 from app.services.vlr_scraper.utils import fetch_soup, safe_text, clean_nested_span
 from app.services.vlr_scraper.config import BASE_URL
@@ -135,7 +135,7 @@ def extract_scheduled_datetime(soup):
     parsed = parse_countdown(status_div.text.strip())
     if parsed:
         days, hours, minutes = parsed
-        return (datetime.now() + timedelta(days=days, hours=hours, minutes=minutes)).isoformat() + "Z"
+        return datetime.now(timezone.utc) + timedelta(days=days, hours=hours, minutes=minutes)
     return None
 
 def parse_countdown(status_text):
