@@ -90,7 +90,7 @@ def extract_map_scores(soup):
                 games.append({
                     "game": game_index,
                     "map_name": map_name,
-                    "map_duration": str(map_duration_td),
+                    "map_duration": str(format_duration_hhmmss(map_duration_td)),
                     "map_duration_seconds": int(map_duration_td.total_seconds()),
                     "team_1_score": team1_score,
                     "team_2_score": team2_score,
@@ -102,10 +102,25 @@ def extract_map_scores(soup):
 
 def parse_map_duration(duration_str):
     try:
-        minutes, seconds = map(int, duration_str.strip().split(":"))
-        return timedelta(minutes=minutes, seconds=seconds)
+        parts = list(map(int, duration_str.strip().split(":")))
+        if len(parts) == 2:
+            minutes, seconds = parts
+            return timedelta(minutes=minutes, seconds=seconds)
+        elif len(parts) == 3:
+            hours, minutes, seconds = parts
+            return timedelta(hours=hours, minutes=minutes, seconds=seconds)
+        else:
+            return timedelta(0)
     except Exception:
         return timedelta(0)
+
+def format_duration_hhmmss(td: timedelta) -> str:
+    total_seconds = int(td.total_seconds())
+    hours = total_seconds // 3600
+    minutes = (total_seconds % 3600) // 60
+    seconds = total_seconds % 60
+    return f"{hours:02}:{minutes:02}:{seconds:02}"
+
 
 def extract_match_status(soup):
     status_div = soup.find("span", class_="match-header-vs-note mod-live")
