@@ -73,18 +73,28 @@ def delete_match_from_id(match_id: int):
     db.close()
     return {"message": f"Match {match_id} supprimé avec succès."}
 
-def get_matchs(size: int = 10, status: str = "results"):
+def get_matchs(size: int = 10, status: str = None):
     """
-    Returns a list of matches from the database
+    Retourne une liste de matchs depuis la base de données,
+    avec un filtre optionnel sur le statut (planned, live, ended).
     """
     db = SessionLocal()
-    matches = db.query(Match).order_by(Match.match_id.desc()).limit(size).all()
+
+    query = db.query(Match).order_by(Match.match_id.desc())
+
+    if status:
+        query = query.filter(Match.status == status)
+
+    matches = query.limit(size).all()
     db.close()
 
     if not matches:
         return {"error": "Aucun match trouvé en base de données."}
     else:
-        print(f"✅ {len(matches)} matchs trouvés en base de données.")
+        if status:
+            print(f"✅ {len(matches)} matchs trouvés en base de données avec status='{status}'.")
+        else:
+            print(f"✅ {len(matches)} matchs trouvés en base de données.")
         return {match.match_id: match for match in matches}
     
 async def update_live_matches_periodically():
