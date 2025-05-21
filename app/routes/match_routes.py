@@ -17,12 +17,26 @@ def get_match_list(size: int = 10, status: str = None):
     """
     return get_matchs(size=size, status=status)
 
+@router.get("/planned")
+def get_planned_matches():
+    """
+    Returns a list of planned matches from the database
+    """
+    return get_matchs(status="planned")
+
 @router.get("/live")
 def get_live_matches():
     """
     Returns a list of live matches from the database
     """
     return get_matchs(status="live")
+
+@router.get("/ended")
+def get_ended_matches():
+    """
+    Returns a list of ended matches from the database
+    """
+    return get_matchs(status="ended")
 
 @router.delete("/match/{match_id}")
 def delete_match(match_id: int):
