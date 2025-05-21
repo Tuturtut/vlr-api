@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime
 from app.services.vlr_scraper.match_list import get_match_list
 from app.services.vlr_scraper.match import get_match_data as scrape_match_data
@@ -85,3 +86,31 @@ def get_matchs(size: int = 10, status: str = "results"):
     else:
         print(f"✅ {len(matches)} matchs trouvés en base de données.")
         return {match.match_id: match for match in matches}
+    
+async def update_live_matches_periodically():
+    while True:
+        print("🔄 Mise à jour des matchs LIVE...")
+
+        db = SessionLocal()
+        live_matches = db.query(Match).filter(Match.status == "live").all()
+        updated_matches = []
+        for match in live_matches:
+            try:
+                updated_data = scrape_match_data(match.match_id)
+                match.team_1_score = updated_data["team_1_score"]
+                match.team_2_score = updated_data["team_2_score"]
+                match.games = updated_data["games"]
+                match.status = updated_data["status"]
+                updated_matches.append(match)
+                match.updated_at = datetime.now()
+                db.commit()
+            except Exception as e:
+                print(f"❌ Erreur scraping match {match.match_id} : {str(e)}")
+        
+        db.close()
+
+        if updated_matches:
+            print(f"✅ {len(updated_matches)} matchs mis à jour")
+
+
+        await asyncio.sleep(30)  # toutes les 30 secondes
