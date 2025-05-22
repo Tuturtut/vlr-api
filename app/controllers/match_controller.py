@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime
+from datetime import datetime, timezone
 from app.services.vlr_scraper.match_list import get_match_list
 from app.services.vlr_scraper.match import get_match_data as scrape_match_data
 from app.db.database import SessionLocal
@@ -8,6 +8,8 @@ from app.db.models import Match
 def fetch_match_from_id(match_id: int):
     db = SessionLocal()
     match = db.query(Match).filter(Match.match_id == match_id).first()
+
+    now = datetime.now(timezone.utc)
 
     if not match:
         try:
@@ -36,7 +38,14 @@ def fetch_match_from_id(match_id: int):
             db.close()
             return {"error": f"Scraping échoué pour match {match_id}: {str(e)}"}
     else:
-        print(f"✅ Match {match_id} trouvé en base de données.")
+
+        scheduled_time = match.scheduled_time
+
+        if scheduled_time.tzinfo is None or scheduled_time.tzinfo.utcoffset(scheduled_time) is None:
+            scheduled_time = scheduled_time.replace(tzinfo=timezone.utc)
+        print(f"➡️ Match {match_id} a lieu dans {scheduled_time - now}")
+        if (scheduled_time - now).total_seconds() < 0:
+            fetch_match_from_id(match_id)
 
     result = {
         str(match.match_id): {
