@@ -1,4 +1,5 @@
-from datetime import datetime
+import asyncio
+from datetime import datetime, timezone
 from app.services.vlr_scraper.match_list import get_match_list
 from app.services.vlr_scraper.match import get_match_data as scrape_match_data
 from app.db.database import SessionLocal
@@ -7,6 +8,8 @@ from app.db.models import Match
 def fetch_match_from_id(match_id: int):
     db = SessionLocal()
     match = db.query(Match).filter(Match.match_id == match_id).first()
+
+    now = datetime.now(timezone.utc)
 
     if not match:
         try:
@@ -35,7 +38,14 @@ def fetch_match_from_id(match_id: int):
             db.close()
             return {"error": f"Scraping échoué pour match {match_id}: {str(e)}"}
     else:
-        print(f"✅ Match {match_id} trouvé en base de données.")
+
+        scheduled_time = match.scheduled_time
+
+        if scheduled_time.tzinfo is None or scheduled_time.tzinfo.utcoffset(scheduled_time) is None:
+            scheduled_time = scheduled_time.replace(tzinfo=timezone.utc)
+        print(f"➡️ Match {match_id} a lieu dans {scheduled_time - now}")
+        if (scheduled_time - now).total_seconds() < 0:
+            fetch_match_from_id(match_id)
 
     result = {
         str(match.match_id): {
@@ -72,16 +82,54 @@ def delete_match_from_id(match_id: int):
     db.close()
     return {"message": f"Match {match_id} supprimé avec succès."}
 
-def get_matchs(size: int = 10, status: str = "results"):
+def get_matchs(size: int = 10, status: str = None):
     """
-    Returns a list of matches from the database
+    Retourne une liste de matchs depuis la base de données,
+    avec un filtre optionnel sur le statut (planned, live, ended).
     """
     db = SessionLocal()
-    matches = db.query(Match).order_by(Match.match_id.desc()).limit(size).all()
+
+    query = db.query(Match).order_by(Match.match_id.desc())
+
+    if status:
+        query = query.filter(Match.status == status)
+
+    matches = query.limit(size).all()
     db.close()
 
     if not matches:
         return {"error": "Aucun match trouvé en base de données."}
     else:
-        print(f"✅ {len(matches)} matchs trouvés en base de données.")
+        if status:
+            print(f"✅ {len(matches)} matchs trouvés en base de données avec status='{status}'.")
+        else:
+            print(f"✅ {len(matches)} matchs trouvés en base de données.")
         return {match.match_id: match for match in matches}
+    
+async def update_live_matches_periodically():
+    while True:
+        print("🔄 Mise à jour des matchs LIVE...")
+
+        db = SessionLocal()
+        live_matches = db.query(Match).filter(Match.status == "live").all()
+        updated_matches = []
+        for match in live_matches:
+            try:
+                updated_data = scrape_match_data(match.match_id)
+                match.team_1_score = updated_data["team_1_score"]
+                match.team_2_score = updated_data["team_2_score"]
+                match.games = updated_data["games"]
+                match.status = updated_data["status"]
+                updated_matches.append(match)
+                match.updated_at = datetime.now()
+                db.commit()
+            except Exception as e:
+                print(f"❌ Erreur scraping match {match.match_id} : {str(e)}")
+        
+        db.close()
+
+        if updated_matches:
+            print(f"✅ {len(updated_matches)} matchs mis à jour")
+
+
+        await asyncio.sleep(30)  # toutes les 30 secondes
