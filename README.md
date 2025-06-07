@@ -16,8 +16,6 @@ cd vlr-api
 2. Installez les dépendances :
 
 ```bash
-Copy
-Edit
 pip install -r requirements.txt
 ```
 
